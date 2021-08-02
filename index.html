@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<meta http-equiv="content-type" charset="utf-8">
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="To Do リスト 入力欄に文字を入力し追加してください"><!--ページの概要説明文-->
+    <meta name="viewport" content="width=device-width, initial-scale=1"><!--スマホ対応のための倍率、幅設定-->
+    <title>To Do リスト</title>
+    <script src="./js/vue.js"></script><!--Vue.jsを読み込む-->
+    <script src="https://kit.fontawesome.com/1f85c00fb9.js" crossorigin="anonymous"></script><!--アイコンフォント読み込み用コード-->
+    <style>
+        h1 {
+            color: #0085E5;
+            font-size: 2.2em;
+        }
+        #app {
+            margin: 30px 10px;
+        }
+        .done {
+            text-decoration: line-through;
+        }
+        #app input[type="text" i] {
+            width: 50%;
+            height: 25px;
+            border-radius: 5px;
+            border: solid 2px #777;
+            padding-left: 0.5em;
+        }
+        ul {
+            display: block;
+            list-style-type: disc;
+            margin-block-start: 1em;
+            margin-block-end: 1em;
+            margin-inline-start: 0px;
+            margin-inline-end: 0px;
+            padding-inline-start: 5px;
+
+        }
+        ul li {
+            padding: 0;
+            line-height: 2.5em;
+            list-style-type: none;
+            border-bottom: thin solid #d0d0d0;;
+        }
+        ul li:first-child{
+            border-top: thin solid #d0d0d0;;
+        }
+        .mycheckbox input[type="checkbox"] + span::before {
+              background-color: #00acc1;
+        }
+        ul input{
+            margin-right: 15px;
+            transform:scale(1.6);
+        }
+        input[type="checkbox" i] {
+            background: red;
+        }
+
+        .delete_button {
+            color: #fff;
+            padding: 5px 10px;
+            background: #0085E5;
+            border-style: none;
+            border-radius: 5px;
+            border-right: solid 4px #005FA3;
+            border-bottom: solid 4px #005FA3;
+        }
+        .fa-trash-alt {
+            margin-right: 0.3em;
+        }
+        .modoru{
+            margin-left: 10px;
+            margin-top: 40px;
+        }
+        .modoru a {
+            color: #005FA3;
+            text-decoration: none;
+        }
+        .modoru a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1>To Do</h1>
+        <p>
+            <input type="text" placeholder="TODOを入力して追加しましょう！" v-model="newItemTitle" v-on:keyup.enter="addTodo">
+        </p><!--TODOの追加-->
+        <ul>
+            <li v-for="item in items">
+                <label class="mycheckbox" v-bind:class="{ done: item.isChecked }">
+                    <input class="checkmark001" type="checkbox" v-model="item.isChecked" v-on:change="saveTodo"> {{ item.title }}
+                </label>
+            </li>
+        </ul>
+        <button class="delete_button" v-on:click="deleteTodo()"><i class="far fa-trash-alt"></i>チェック済みの項目を削除する</button>
+    </div><!--TODOの表示-->
+
+    <script>
+        const vm = new Vue({
+            el: '#app',
+            data: {
+                items: [
+                    { title: '領収書を準備する', isChecked: true },
+                    { title: '資料を作る', isChecked: true },
+                    { title: '参加者の人数を確認する', isChecked: false },
+                    { title: '材料を注文する', isChecked: false },
+                    { title: '参加費のお釣りを準備する', isChecked: false },
+                    { title: '会場設営をする', isChecked: false },
+                ],
+                newItemTitle: ''
+            },
+            methods: {
+                addTodo: function() {
+                    this.items.push({
+                        title: this.newItemTitle,
+                        isChecked: false
+                    });
+                    this.newItemTitle = '';
+                    this.saveTodo();
+                },
+                deleteTodo: function() {
+                    this.items = this.items.filter(function(item) {
+                        return item.isChecked === false; //
+                    });
+                    this.saveTodo();
+                },
+                saveTodo: function() {
+                    localStorage.setItem('items', JSON.stringify(this.items));
+                },
+                loadTodo: function() {
+                    this.items = JSON.parse(localStorage.getItem('items'));
+                    if (!this.items) {
+                        this.items = [];
+                    }
+                },
+            },
+            mounted: function() {
+                this.loadTodo();
+            },
+        })
+    </script>
+
+</body>
+<footer>
+    <p class="modoru"><a href="../">&#8617;戻る</a></p>
+</footer>
+
+</html>
